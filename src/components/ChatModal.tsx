@@ -7,9 +7,7 @@ export function ChatModal() {
     const [client, setClient] = useState<Client>();
     const [topic, setTopic] = useState<string>('');
     const [msg, setMsg] = useState<string>('');
-
     const [messages, setMessages] = useState<string[]>([]);
-
     const { address, isConnected } = useAccount();
 
     const serverId = 'eip155:1:0xB0Ee2f94f0680d6131316d6056Dcf5827Abe492B';
@@ -31,8 +29,10 @@ export function ChatModal() {
             client.on("chat_invite_accepted", async (event) => {                
                 setTopic(event.params.topic);
             });            
-            client.on("chat_message", async (event) => {                
-                setMessages([...messages, event.params.message]);
+            client.on("chat_message", async (event) => {  
+                setMessages( (messages) => [...messages, event.params.message] );
+                console.log(messages)                
+
             });
                             
             await client.register({
@@ -69,7 +69,7 @@ export function ChatModal() {
             timestamp: Date.now(),
         })
             .then(() => {
-                setMessages([...messages, msg]);
+                messages.push(msg as string);
                 setMsg('');
                 // console.log(client.chatMessages.getAll());
             })
@@ -77,30 +77,36 @@ export function ChatModal() {
     }
 
     return (
+        <div>
+            <ol>
+                {messages.map((msg) => (
+                    <li key={msg}>{msg}</li>
+                ))}
+            </ol>
         <div className="card shrink-0 w-full max-w-sm shadow-2xl bg-base-100 card-bordered">
             <div className="card-body items-center">
 
-                {/* Messages */}
-                <div>
-                    {messages.map((msg, i) => {
-                        return <p key={i}>{msg}</p>
-                    })
-                    }
-                </div>
+                {/* Messages */}                
+                {/* <textarea
+                    className="textarea-lg textarea-bordered textarea-info [overflow-y=scroll]"
+                    disabled
+                > */}                
+
+                {/* </textarea> */}
 
                 {/* Input */}
                 <div className="form-control">
                     <label className="input-group">
                         <input type="text" id="msgInput"
                             placeholder="Type your messege"
-                            className="input input-bordered"
-                            onChange={(msg) => { setMsg(msg.target.value) }}
+                                className="input input-bordered"       
+                            onChange={(e) => setMsg(e.target.value)}    
                             value={msg}
-                        />
+                            />
                         <button
-                            className="btn btn-circle bg-blue-600 text-white border-none"
-                            onClick={() => sendMsg()}
-                        >
+                                className="btn btn-circle bg-blue-600 text-white border-none"
+                                onClick={() => sendMsg()}
+                            >
                             <p>Send </p>
                         </button>
                     </label>
@@ -109,5 +115,6 @@ export function ChatModal() {
 
             </div>
         </div>
+                            </div>
     );
 }
