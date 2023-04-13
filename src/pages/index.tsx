@@ -1,11 +1,8 @@
-import Demo from '../components/Demo';
-import Head from 'next/head';
+import Demo from '@/components/Demo';
+
 export default function Home(props: any) {
 
   return (      
-    <div>
-      <h1>WC Tester</h1>
-      {/* <Demo />       */}
-    </div>
+        <Demo />      
     )
 }
